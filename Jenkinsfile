@@ -57,8 +57,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'SonarQube-Token', variable: 'SONAR_TOKEN')]) {
                 sh """
                 mvn sonar:sonar \
-                -Dsonar.projectKey=JavaWebApp-Project \
-                -Dsonar.host.url=http://172.31.90.165:9000 \
+                -Dsonar.projectKey=JavaWebApp-Project\
+                -Dsonar.host.url=http://3.17.143.64:9000 \
                 -Dsonar.login=$SONAR_TOKEN
                 """
                 }
@@ -71,25 +71,6 @@ pipeline {
           waitForQualityGate abortPipeline: true
           }
        }
-    }
-    stage("Nexus Artifact Uploader"){
-        steps{
-           nexusArtifactUploader(
-              nexusVersion: 'nexus3',
-              protocol: 'http',
-              nexusUrl: '172.31.87.194:8081',
-              groupId: 'webapp',
-              version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-              repository: 'maven-project-releases',  //"${NEXUS_REPOSITORY}",
-              credentialsId: "${NEXUS_CREDENTIAL_ID}",
-              artifacts: [
-                  [artifactId: 'webapp',
-                  classifier: '',
-                  file: "${WORKSPACE}/webapp/target/webapp.war",
-                  type: 'war']
-              ]
-           )
-        }
     }
     stage('Deploy to Development Env') {
         environment {
